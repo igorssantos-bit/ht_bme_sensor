@@ -122,7 +122,7 @@ int main(void)
 
 	//init_lsm303agr();
 	init_bme680();
-	printf("\r\nSistema Inicializado\r\n");
+	printf("Sistema Inicializado\r\n");
 	//traffic_init();
 
 	/* USER CODE END 2 */
@@ -130,7 +130,6 @@ int main(void)
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while(1){
-		printf("qqqqqq\r\n");
 		HAL_Delay(100);
 
 		/* USER CODE END WHILE */

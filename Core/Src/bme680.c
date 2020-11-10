@@ -299,7 +299,7 @@ int8_t user_i2c_read(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *re
 			(I2C_HandleTypeDef *) handle,		// i2c handle
 			(uint8_t) (dev_id << 1), 			// i2c address, left aligned
 			(uint8_t) reg_addr, 					// register address
-			I2C_MEMADD_SIZE_8BIT, 				// 8bit register address
+			I2C_MEMADD_SIZE_16BIT, 				// 8bit register address
 			(uint8_t*) (&reg_data),				// write returned data to this variable
 			len, 										// how many bytes to expect returned
 			1000);									// timeout
@@ -327,7 +327,7 @@ int8_t user_i2c_write(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *r
 			(I2C_HandleTypeDef *) handle,		// i2c handle
 			(uint8_t) (dev_id << 1), 			// i2c address, left aligned
 			(uint8_t) reg_addr, 					// register address
-			I2C_MEMADD_SIZE_8BIT, 				// 8bit register address
+			I2C_MEMADD_SIZE_16BIT, 				// 8bit register address
 			(uint8_t*) (&reg_data), 			// write returned data to reg_data
 			len, 										// write how many bytes
 			1000);									// timeout
