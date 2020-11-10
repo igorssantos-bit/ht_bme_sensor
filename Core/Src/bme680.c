@@ -281,10 +281,6 @@ int8_t user_i2c_read(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *re
 	int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
 
 	/*
-	 * The parameter dev_id can be used as a variable to store the I2C address of the device
-	 */
-
-	/*
 	 * Data on the bus should be like
 	 * |------------+---------------------|
 	 * | I2C action | Data                |
@@ -299,17 +295,13 @@ int8_t user_i2c_read(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *re
 	 * | Stop       | -                   |
 	 * |------------+---------------------|
 	 */
-	rslt = HAL_I2C_Mem_Read( (I2C_HandleTypeDef *) handle, BME680_I2C_ADDR_PRIMARY, reg_addr, I2C_MEMADD_SIZE_16BIT, reg_data, len, 1000);
+	rslt = HAL_I2C_Mem_Read( (I2C_HandleTypeDef *) handle, dev_id, reg_addr, I2C_MEMADD_SIZE_16BIT, reg_data, len, 1000);
 
 	return rslt;
 }
 
 int8_t user_i2c_write(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len){
 	int8_t rslt = 0; /* Return 0 for Success, non-zero for failure */
-
-	/*
-	 * The parameter dev_id can be used as a variable to store the I2C address of the device
-	 */
 
 	/*
 	 * Data on the bus should be like
@@ -324,7 +316,7 @@ int8_t user_i2c_write(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *r
 	 * | Stop       | -                   |
 	 * |------------+---------------------|
 	 */
-	rslt = HAL_I2C_Mem_Write( (I2C_HandleTypeDef *) handle, BME680_I2C_ADDR_PRIMARY, reg_addr, I2C_MEMADD_SIZE_16BIT, reg_data, len, 1000);
+	rslt = HAL_I2C_Mem_Write( (I2C_HandleTypeDef *) handle, dev_id, reg_addr, I2C_MEMADD_SIZE_16BIT, reg_data, len, 1000);
 
 	return rslt;
 }
