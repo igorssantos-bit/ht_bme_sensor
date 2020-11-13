@@ -295,14 +295,7 @@ int8_t user_i2c_read(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *re
 	 * | Stop       | -                   |
 	 * |------------+---------------------|
 	 */
-	rslt = HAL_I2C_Mem_Read(
-			(I2C_HandleTypeDef *) handle,		// i2c handle
-			(uint8_t) (dev_id << 1), 			// i2c address, left aligned
-			(uint8_t) reg_addr, 					// register address
-			I2C_MEMADD_SIZE_16BIT, 				// 8bit register address
-			(uint8_t*) (&reg_data),				// write returned data to this variable
-			len, 										// how many bytes to expect returned
-			1000);									// timeout
+	rslt = HAL_I2C_Mem_Read((I2C_HandleTypeDef *) handle, (dev_id << 1), reg_addr, I2C_MEMADD_SIZE_8BIT, reg_data, len, 1000);
 
 	return rslt;
 }
@@ -323,14 +316,7 @@ int8_t user_i2c_write(void *handle, uint8_t dev_id, uint8_t reg_addr, uint8_t *r
 	 * | Stop       | -                   |
 	 * |------------+---------------------|
 	 */
-	rslt = HAL_I2C_Mem_Write(
-			(I2C_HandleTypeDef *) handle,		// i2c handle
-			(uint8_t) (dev_id << 1), 			// i2c address, left aligned
-			(uint8_t) reg_addr, 					// register address
-			I2C_MEMADD_SIZE_16BIT, 				// 8bit register address
-			(uint8_t*) (&reg_data), 			// write returned data to reg_data
-			len, 										// write how many bytes
-			1000);									// timeout
+	rslt = HAL_I2C_Mem_Write((I2C_HandleTypeDef *) handle, (dev_id << 1), reg_addr, I2C_MEMADD_SIZE_8BIT, reg_data, len, 1000);
 
 	return rslt;
 }
@@ -349,7 +335,7 @@ int8_t bme680_init(struct bme680_dev *dev)
 		/* Soft reset to restore it to default values*/
 		rslt = bme680_soft_reset(dev);
 		if (rslt == BME680_OK) {
-			rslt = bme680_get_regs(BME680_CHIP_ID_ADDR, &dev->chip_id, 1, dev);
+			rslt = bme680_get_regs(BME680_CHIP_ID_ADDR, (uint8_t *) (&dev->chip_id), 1, dev);
 			if (rslt == BME680_OK) {
 				if (dev->chip_id == BME680_CHIP_ID) {
 					/* Get the Calibration data */
