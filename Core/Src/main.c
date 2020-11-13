@@ -129,8 +129,32 @@ int main(void)
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+
+   /* Get the total measurement duration so as to sleep or wait till the
+    * measurement is complete */
+   uint16_t meas_period;
+   int8_t rslt;
+   bme680_get_profile_dur(&meas_period, &bme.gas_sensor);
+
+   struct bme680_field_data data;
+
 	while(1){
-		HAL_Delay(100);
+		user_delay_ms(meas_period); /* Delay till the measurement is ready */
+
+		rslt = bme680_get_sensor_data(&data, &bme.gas_sensor);
+
+		printf("T: %.2f degC, P: %.2f hPa, H %.2f %%rH ", data.temperature / 100.0f,
+				data.pressure / 100.0f, data.humidity / 1000.0f );
+		/* Avoid using measurements from an unstable heating setup */
+		if(data.status & BME680_GASM_VALID_MSK)
+			printf(", G: %d ohms", data.gas_resistance);
+
+		printf("\r\n");
+
+		/* Trigger the next measurement if you would like to read data out continuously */
+		if (bme.gas_sensor.power_mode == BME680_FORCED_MODE) {
+			rslt = bme680_set_sensor_mode(&bme.gas_sensor);
+		}
 
 		/* USER CODE END WHILE */
 

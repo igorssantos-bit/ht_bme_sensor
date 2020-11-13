@@ -105,22 +105,52 @@ void read_lsm303agr_data(void){
 }
 
 void init_bme680(void){
+	int8_t rslt = BME680_OK;
+	uint8_t set_required_settings;
 
-	// SDO Grounded -> 0x76
-	bme.gas_sensor.dev_id = BME680_I2C_ADDR_PRIMARY;
+
+	/*  Inicialização */
+	bme.gas_sensor.dev_id = BME680_I2C_ADDR_PRIMARY;  // SDO Grounded -> 0x76 left aligned
 	bme.gas_sensor.intf = BME680_I2C_INTF;
 	bme.gas_sensor.handle = (I2C_HandleTypeDef *) &hi2c1;
 	bme.gas_sensor.read = user_i2c_read;
 	bme.gas_sensor.write = user_i2c_write;
 	bme.gas_sensor.delay_ms = user_delay_ms;
 	/* amb_temp can be set to 25 prior to configuring the gas sensor
-	 * or by performing a few temperature readings without operating the gas sensor.
-	 */
+	 * or by performing a few temperature readings without operating the gas sensor. */
 	bme.gas_sensor.amb_temp = 25;
 
-
-	int8_t rslt = BME680_OK;
-	rslt = bme680_init( &bme.gas_sensor);
+	rslt = bme680_init( &bme.gas_sensor );
 	if(rslt!=BME680_OK)
 		printf("Erro ao inicializar BME = %d\r\n", rslt);
+
+
+	/*  Configuração */
+	/* Set the temperature, pressure and humidity settings */
+	bme.gas_sensor.tph_sett.os_hum = BME680_OS_2X;
+	bme.gas_sensor.tph_sett.os_pres = BME680_OS_4X;
+	bme.gas_sensor.tph_sett.os_temp = BME680_OS_8X;
+	bme.gas_sensor.tph_sett.filter = BME680_FILTER_SIZE_3;
+
+	/* Set the remaining gas sensor settings and link the heating profile */
+	bme.gas_sensor.gas_sett.run_gas = BME680_ENABLE_GAS_MEAS;
+	/* Create a ramp heat waveform in 3 steps */
+	bme.gas_sensor.gas_sett.heatr_temp = 320; /* degree Celsius */
+	bme.gas_sensor.gas_sett.heatr_dur = 150; /* milliseconds */
+
+	/* Select the power mode */
+	/* Must be set before writing the sensor configuration */
+	bme.gas_sensor.power_mode = BME680_FORCED_MODE;
+
+	/* Set the required sensor settings needed */
+	set_required_settings = BME680_OST_SEL | BME680_OSP_SEL | BME680_OSH_SEL | BME680_FILTER_SEL
+	  | BME680_GAS_SENSOR_SEL;
+
+	/* Set the desired sensor configuration */
+	rslt = bme680_set_sensor_settings(set_required_settings, &bme.gas_sensor);
+
+	/* Set the power mode */
+	rslt = bme680_set_sensor_mode(&bme.gas_sensor);
+
+
 }
